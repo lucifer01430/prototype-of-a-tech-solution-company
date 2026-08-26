@@ -387,6 +387,194 @@ ul{list-style:none;margin:0;padding:0;}
 .title-meta strong{color:var(--cyan);font-weight:500;}
 
 /* ============================================================
+   SLIDE 1 — LIFECYCLE JOURNEY
+============================================================ */
+.lifecycle-map{
+  position:relative;width:100%;max-width:1080px;height:min(50vh,460px);
+  margin-top:12px;isolation:isolate;
+}
+.lifecycle-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.journey-base,.journey-active,.journey-pulse{
+  fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+.journey-base{stroke:var(--line);stroke-width:2;}
+.journey-active{
+  stroke:var(--cyan);stroke-width:2.2;opacity:.7;
+  stroke-dasharray:1200;stroke-dashoffset:1200;
+}
+.slide.active .journey-active{animation:journeyDraw 2.1s var(--ease) .2s forwards;}
+.journey-pulse{
+  stroke:var(--blue);stroke-width:5;opacity:0;stroke-dasharray:16 1180;
+  filter:drop-shadow(0 0 10px rgba(34,211,238,.55));
+}
+.slide.active .journey-pulse{animation:journeyPulse 4.8s ease-in-out 2s infinite;}
+@keyframes journeyDraw{to{stroke-dashoffset:0;}}
+@keyframes journeyPulse{
+  0%{stroke-dashoffset:80;opacity:0;}
+  15%,75%{opacity:.55;}
+  100%{stroke-dashoffset:-1180;opacity:0;}
+}
+.journey-node{
+  position:absolute;z-index:3;width:126px;min-height:104px;
+  transform:translate(-50%,-50%) scale(.72);opacity:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  padding:12px 10px;border:1px solid rgba(255,255,255,.1);border-radius:6px;
+  background:linear-gradient(180deg, rgba(13,21,36,.84), rgba(8,14,25,.72));
+  color:var(--text);cursor:pointer;text-align:center;
+  box-shadow:0 14px 32px rgba(0,0,0,.28), inset 0 0 0 1px rgba(34,211,238,.04);
+  transition:transform .32s var(--ease), border-color .32s var(--ease), background .32s var(--ease), box-shadow .32s var(--ease);
+}
+.slide.active .journey-node{animation:journeyNodeIn .62s var(--ease) forwards;}
+.slide.active .journey-node:nth-of-type(5){animation-name:journeyNodeIn, journeyActive;}
+@keyframes journeyNodeIn{to{opacity:1;transform:translate(-50%,-50%) scale(1);}}
+@keyframes journeyActive{
+  0%,100%{box-shadow:0 14px 32px rgba(0,0,0,.28), inset 0 0 0 1px rgba(34,211,238,.04);}
+  50%{box-shadow:0 18px 42px rgba(0,0,0,.34), 0 0 26px rgba(34,211,238,.18), inset 0 0 0 1px rgba(34,211,238,.16);}
+}
+.journey-node:hover,.journey-node:focus-visible{
+  transform:translate(-50%,-50%) scale(1.05);
+  border-color:rgba(34,211,238,.86);
+  background:linear-gradient(180deg, rgba(18,29,49,.92), rgba(8,20,33,.8));
+  box-shadow:0 18px 44px rgba(0,0,0,.34), 0 0 30px rgba(34,211,238,.22);
+  outline:none;
+}
+.journey-index{font-family:var(--font-mono);font-size:.62rem;color:var(--muted-2);letter-spacing:.12em;}
+.journey-icon{
+  width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--cyan);background:rgba(34,211,238,.1);font-size:1rem;
+}
+.journey-label{font-family:var(--font-display);font-size:.86rem;font-weight:600;line-height:1.15;}
+.journey-endpoint{
+  position:absolute;z-index:2;transform:translate(-50%,-50%);
+  padding:8px 12px;border:1px solid rgba(34,211,238,.28);border-radius:999px;
+  background:rgba(5,7,12,.68);color:var(--muted);
+  font-family:var(--font-mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  opacity:0;
+}
+.slide.active .journey-endpoint{animation:fadeInOnly .6s ease .15s forwards;}
+.slide.active .journey-growth{animation-delay:2.2s;color:var(--cyan);}
+
+/* ============================================================
+   SLIDE 2 — TECHNOLOGY ECOSYSTEM
+============================================================ */
+.tech-ecosystem{
+  position:relative;width:100%;max-width:1080px;height:min(57vh,540px);
+  margin-top:4px;isolation:isolate;
+}
+.ecosystem-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:1;}
+.eco-orbit{
+  fill:none;stroke:rgba(34,211,238,.12);stroke-width:1;stroke-dasharray:5 10;
+  opacity:0;
+}
+.slide.active .eco-orbit{animation:fadeInOnly 1s ease .35s forwards, orbitDrift 16s linear .35s infinite;}
+@keyframes orbitDrift{to{stroke-dashoffset:-120;}}
+.eco-link{
+  fill:none;stroke:rgba(34,211,238,.6);stroke-width:1.4;stroke-linecap:round;
+  stroke-dasharray:520;stroke-dashoffset:520;opacity:.58;
+  transition:opacity .25s var(--ease), stroke-width .25s var(--ease);
+}
+.slide.active .eco-link{animation:ecoLineDraw 1.15s var(--ease) forwards;}
+@keyframes ecoLineDraw{to{stroke-dashoffset:0;}}
+.eco-link.is-active{opacity:1;stroke-width:2.4;filter:drop-shadow(0 0 8px rgba(34,211,238,.5));}
+.eco-particle{fill:var(--cyan);opacity:.34;filter:drop-shadow(0 0 6px rgba(34,211,238,.7));}
+.ecosystem-center{
+  position:absolute;left:50%;top:50%;z-index:4;
+  width:150px;height:150px;transform:translate(-50%,-50%) scale(.7);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
+  border:1.5px solid rgba(34,211,238,.82);border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, rgba(18,29,49,.96), rgba(5,7,12,.92));
+  box-shadow:0 0 42px rgba(34,211,238,.22), inset 0 0 34px rgba(34,211,238,.08);
+  opacity:0;
+}
+.ecosystem-center i{font-size:1.65rem;color:var(--cyan);}
+.ecosystem-center span{font-family:var(--font-display);font-size:.86rem;font-weight:700;line-height:1.18;}
+.slide.active .ecosystem-center{animation:centerPop .7s var(--ease) .08s forwards;}
+.ecosystem-node{
+  position:absolute;z-index:3;width:188px;min-height:106px;
+  display:flex;flex-direction:column;gap:6px;text-align:left;
+  padding:12px 14px;border:1px solid rgba(255,255,255,.1);border-radius:6px;
+  background:linear-gradient(180deg, rgba(13,21,36,.82), rgba(8,14,25,.68));
+  color:var(--text);opacity:0;transform:scale(.76);
+  cursor:pointer;
+  box-shadow:0 14px 34px rgba(0,0,0,.24), inset 0 0 0 1px rgba(34,211,238,.04);
+  transition:opacity .3s var(--ease), transform .32s var(--ease), border-color .32s var(--ease), background .32s var(--ease), box-shadow .32s var(--ease);
+}
+.slide.active .ecosystem-node{animation:ecoNodeIn .62s var(--ease) forwards, nodeBreathe 5.8s ease-in-out 2s infinite;}
+@keyframes ecoNodeIn{to{opacity:1;transform:scale(1);}}
+@keyframes nodeBreathe{0%,100%{translate:0 0;}50%{translate:0 -4px;}}
+.ecosystem-node:hover,.ecosystem-node:focus-visible,.ecosystem-node.is-active{
+  border-color:rgba(34,211,238,.88);
+  background:linear-gradient(180deg, rgba(18,29,49,.94), rgba(8,20,33,.82));
+  box-shadow:0 18px 44px rgba(0,0,0,.32), 0 0 28px rgba(34,211,238,.18);
+  transform:scale(1.045);outline:none;
+}
+.tech-ecosystem.has-active-node .ecosystem-node:not(.is-active){opacity:.42;filter:saturate(.72);}
+.eco-node-top{display:flex;align-items:center;justify-content:space-between;color:var(--cyan);}
+.eco-num{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.08em;color:var(--muted-2);}
+.eco-node-top i{font-size:1rem;}
+.eco-title{font-family:var(--font-display);font-weight:650;font-size:.88rem;line-height:1.18;}
+.eco-desc{font-size:.71rem;color:var(--muted);line-height:1.38;}
+.ecosystem-node:hover .eco-desc,.ecosystem-node:focus-visible .eco-desc,.ecosystem-node.is-active .eco-desc{color:#b6c0d2;}
+
+/* ============================================================
+   SLIDE 3 — BUSINESS CAPABILITY MAP
+============================================================ */
+.capability-map{
+  position:relative;width:100%;max-width:1080px;height:min(56vh,520px);
+  margin-top:6px;isolation:isolate;
+}
+.cap-map-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:1;}
+.cap-path{
+  fill:none;stroke:rgba(34,211,238,.46);stroke-width:1.2;stroke-linecap:round;
+  stroke-dasharray:560;stroke-dashoffset:560;opacity:.7;
+}
+.slide.active .cap-path{animation:capPathDraw 1.1s var(--ease) forwards;}
+@keyframes capPathDraw{to{stroke-dashoffset:0;}}
+.cap-solve-path{stroke-width:2;stroke:rgba(34,211,238,.78);}
+.cap-particle{fill:var(--cyan);opacity:.28;filter:drop-shadow(0 0 6px rgba(34,211,238,.7));}
+.cap-solve-particle{opacity:.58;}
+.cap-problem{
+  position:absolute;z-index:3;width:208px;min-height:40px;
+  transform:translate(-50%,-50%) translateX(-16px);opacity:0;
+  display:flex;align-items:center;gap:10px;text-align:left;
+  padding:9px 12px;border:1px solid rgba(245,166,35,.2);border-radius:5px;
+  background:rgba(13,21,36,.78);color:var(--text);cursor:pointer;
+  box-shadow:0 10px 24px rgba(0,0,0,.22);
+  transition:transform .28s var(--ease), border-color .28s var(--ease), background .28s var(--ease), box-shadow .28s var(--ease);
+}
+.slide.active .cap-problem{animation:capProblemIn .54s var(--ease) forwards;}
+@keyframes capProblemIn{to{opacity:1;transform:translate(-50%,-50%) translateX(0);}}
+.cap-problem:hover,.cap-problem:focus-visible{
+  border-color:rgba(245,166,35,.58);background:rgba(245,166,35,.1);
+  transform:translate(-50%,-50%) translateX(4px);outline:none;
+}
+.cap-problem i{color:var(--amber);font-size:.92rem;min-width:16px;}
+.cap-problem span{font-size:.78rem;line-height:1.22;font-weight:500;}
+.cap-hub{
+  position:absolute;z-index:4;width:160px;height:160px;
+  transform:translate(-50%,-50%) scale(.72);opacity:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
+  border:1.5px solid rgba(34,211,238,.86);border-radius:50%;
+  background:radial-gradient(circle at 42% 34%, rgba(18,29,49,.98), rgba(5,7,12,.92));
+  color:var(--text);box-shadow:0 0 42px rgba(34,211,238,.24), inset 0 0 34px rgba(34,211,238,.08);
+}
+.cap-hub i{font-size:1.6rem;color:var(--cyan);}
+.cap-hub span{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);}
+.slide.active .cap-hub{animation:centerPop .68s var(--ease) .38s forwards;}
+.cap-outcome{
+  position:absolute;z-index:3;width:256px;min-height:132px;
+  transform:translate(-50%,-50%) translateX(18px);opacity:0;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;
+  padding:18px 20px;border:1px solid rgba(34,211,238,.6);border-radius:6px;
+  background:linear-gradient(180deg, rgba(34,211,238,.14), rgba(13,21,36,.82));
+  box-shadow:0 18px 44px rgba(0,0,0,.3), 0 0 26px rgba(34,211,238,.12);
+}
+.slide.active .cap-outcome{animation:capOutcomeIn .7s var(--ease) 1s forwards;}
+@keyframes capOutcomeIn{to{opacity:1;transform:translate(-50%,-50%) translateX(0);}}
+.cap-outcome span{font-family:var(--font-display);font-size:1.02rem;color:var(--muted);line-height:1.35;}
+.cap-outcome strong{font-family:var(--font-display);font-size:1.28rem;color:var(--cyan);font-weight:700;line-height:1.2;}
+
+/* ============================================================
    HORIZONTAL / VERTICAL PIPELINE
 ============================================================ */
 .pipeline{display:flex;gap:6px;width:100%;position:relative;}
@@ -754,6 +942,24 @@ ul{list-style:none;margin:0;padding:0;}
   .entry-gateway{padding:24px 34px;}
   .title-safe-zone{width:92vw;height:min(390px,58vh);}
   .title-network{opacity:.3;}
+  .lifecycle-map{height:min(52vh,410px);}
+  .journey-node{width:104px;min-height:88px;padding:10px 8px;}
+  .journey-label{font-size:.76rem;}
+  .journey-icon{width:32px;height:32px;}
+  .journey-endpoint{display:none;}
+  .tech-ecosystem{height:min(58vh,480px);}
+  .ecosystem-center{width:120px;height:120px;}
+  .ecosystem-center span{font-size:.74rem;}
+  .ecosystem-node{width:154px;min-height:88px;padding:10px 11px;}
+  .eco-title{font-size:.78rem;}
+  .eco-desc{font-size:.64rem;line-height:1.28;}
+  .capability-map{height:min(58vh,490px);}
+  .cap-problem{width:176px;min-height:36px;padding:8px 10px;}
+  .cap-problem span{font-size:.7rem;}
+  .cap-hub{width:136px;height:136px;}
+  .cap-outcome{width:218px;min-height:118px;padding:16px;}
+  .cap-outcome span{font-size:.9rem;}
+  .cap-outcome strong{font-size:1.08rem;}
   .radial-node{width:120px;padding:9px 10px;}
   .radial-node .rn-desc{display:none;}
   .pm-node{width:150px;}
@@ -775,6 +981,28 @@ ul{list-style:none;margin:0;padding:0;}
   .skip-btn{right:18px;bottom:18px;}
   .title-content{max-width:94vw;}
   .title-safe-zone{height:min(360px,62vh);}
+  .lifecycle-map,.tech-ecosystem,.capability-map{height:min(62vh,440px);}
+  .journey-node{width:86px;min-height:76px;gap:5px;padding:8px 6px;}
+  .journey-index{display:none;}
+  .journey-icon{width:28px;height:28px;font-size:.86rem;}
+  .journey-label{font-size:.66rem;}
+  .journey-endpoint{display:none;}
+  .ecosystem-center{width:116px;height:116px;}
+  .ecosystem-center i{font-size:1.25rem;}
+  .ecosystem-center span{font-size:.64rem;}
+  .ecosystem-node{width:126px;min-height:72px;padding:8px;}
+  .eco-num{display:none;}
+  .eco-title{font-size:.68rem;}
+  .eco-desc{display:none;}
+  .cap-problem{width:132px;min-height:32px;padding:7px 8px;gap:7px;}
+  .cap-problem span{font-size:.62rem;}
+  .cap-problem i{font-size:.78rem;}
+  .cap-hub{width:104px;height:104px;}
+  .cap-hub i{font-size:1.2rem;}
+  .cap-hub span{font-size:.52rem;}
+  .cap-outcome{width:150px;min-height:98px;padding:12px;}
+  .cap-outcome span{font-size:.72rem;}
+  .cap-outcome strong{font-size:.86rem;}
   .pipeline-horizontal .pipe-step{min-width:90px;padding:10px;}
   .radial-diagram,.personal-map{height:auto;position:static;display:flex;flex-direction:column;gap:12px;}
   .radial-center,.pm-center{position:static;transform:none !important;margin:0 auto 10px;}

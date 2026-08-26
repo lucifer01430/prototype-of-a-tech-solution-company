@@ -170,7 +170,10 @@
 
     slideEl.querySelectorAll('[data-diagram]').forEach(el => {
       const kind = el.dataset.diagram;
-      if (kind === 'pipeline') buildPipeline(el);
+      if (kind === 'lifecycle') buildLifecycle(el);
+      else if (kind === 'tech-ecosystem') buildTechEcosystem(el);
+      else if (kind === 'capability-map') buildCapabilityMap(el);
+      else if (kind === 'pipeline') buildPipeline(el);
       else if (kind === 'radial') buildRadial(el);
       else if (kind === 'ecosystem') buildEcosystem(el);
       else if (kind === 'chipcloud') buildChipCloud(el);
@@ -185,6 +188,180 @@
   }
 
   function icon(name){ return `<i class="bi bi-${name}"></i>`; }
+
+  // ---------- Lifecycle journey (Slide 1) ----------
+  function buildLifecycle(el){
+    const items = (el.dataset.items || '').split(',').map(s => s.trim()).filter(Boolean);
+    const icons = (el.dataset.icons || '').split(',').map(s => s.trim());
+    const w = el.clientWidth || 1040;
+    const h = el.clientHeight || 430;
+    const points = items.map((_, i) => {
+      if (w < 960) {
+        const rowGap = Math.min(150, h * 0.36);
+        const topY = h * 0.45 - rowGap / 2;
+        const bottomY = h * 0.45 + rowGap / 2;
+        const topCount = 4;
+        const topStep = (w - 220) / (topCount - 1);
+        const bottomStep = (w - 320) / 2;
+        if (i < topCount) return { x: 110 + i * topStep, y: topY };
+        return { x: w - 210 - (i - topCount) * bottomStep, y: bottomY };
+      }
+      const t = items.length > 1 ? i / (items.length - 1) : 0;
+      const x = 92 + t * (w - 184);
+      const y = h * 0.52 + Math.sin((t * Math.PI * 2) - Math.PI / 3) * 54;
+      return { x, y };
+    });
+
+    const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+    const start = points[0] || { x: 92, y: h / 2 };
+    const end = points[points.length - 1] || { x: w - 92, y: h / 2 };
+    const svg = `
+      <svg class="lifecycle-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+        <path class="journey-base" d="${pathD}"></path>
+        <path class="journey-active" d="${pathD}"></path>
+        <path class="journey-pulse" d="${pathD}"></path>
+      </svg>`;
+
+    let html = svg +
+      `<div class="journey-endpoint journey-start" style="left:${start.x}px;top:${start.y - 82}px"><span>Business Need</span></div>` +
+      `<div class="journey-endpoint journey-growth" style="left:${end.x}px;top:${end.y + 82}px"><span>Business Growth</span></div>`;
+
+    items.forEach((label, i) => {
+      const p = points[i];
+      const delay = (0.22 + i * 0.16).toFixed(2);
+      html += `<button class="journey-node" style="left:${p.x}px;top:${p.y}px;animation-delay:${delay}s" type="button">
+        <span class="journey-index">${String(i + 1).padStart(2, '0')}</span>
+        <span class="journey-icon">${icon(icons[i] || 'circle')}</span>
+        <span class="journey-label">${label}</span>
+      </button>`;
+    });
+
+    el.innerHTML = html;
+  }
+
+  // ---------- Technology ecosystem (Slide 2) ----------
+  function buildTechEcosystem(el){
+    let items;
+    try { items = JSON.parse(el.dataset.items); } catch(e) { items = []; }
+    const centerHtml = el.dataset.center || '';
+    const centerIcon = el.dataset.centerIcon || 'diagram-3';
+    const w = el.clientWidth || 1040;
+    const h = el.clientHeight || 520;
+    const cx = w / 2;
+    const cy = h * 0.61;
+    const rx = Math.max(250, Math.min(w * 0.36, 410));
+    const ry = Math.max(165, Math.min(h * 0.4, 220));
+    const nodeW = w < 900 ? 154 : 188;
+    const nodeH = w < 900 ? 88 : 106;
+
+    let svg = `<svg class="ecosystem-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true">
+      <circle class="eco-orbit eco-orbit-1" cx="${cx}" cy="${cy}" r="${Math.min(rx, ry) + 58}"></circle>
+      <ellipse class="eco-orbit eco-orbit-2" cx="${cx}" cy="${cy}" rx="${rx + 70}" ry="${ry + 58}"></ellipse>`;
+    let nodes = `<div class="ecosystem-center" style="left:${cx}px;top:${cy}px">
+      <i class="bi bi-${centerIcon}"></i><span>${centerHtml}</span>
+    </div>`;
+
+    items.forEach((it, i) => {
+      const angle = (Math.PI * 2 * i / items.length) - Math.PI / 2;
+      const nx = cx + rx * Math.cos(angle);
+      const ny = cy + ry * Math.sin(angle);
+      const id = `eco-path-${i}`;
+      const delay = (0.28 + i * 0.13).toFixed(2);
+      svg += `<path id="${id}" class="eco-link" data-link="${i}" d="M ${cx} ${cy} L ${nx.toFixed(1)} ${ny.toFixed(1)}" style="animation-delay:${delay}s"></path>
+        <circle class="eco-particle" r="3" style="animation-delay:${(1.2 + i * 0.34).toFixed(2)}s">
+          <animateMotion dur="4.2s" begin="${(1.2 + i * 0.34).toFixed(2)}s" repeatCount="indefinite">
+            <mpath href="#${id}"></mpath>
+          </animateMotion>
+        </circle>`;
+
+      let left = nx - nodeW / 2;
+      let top = ny - nodeH / 2;
+      left = Math.max(4, Math.min(w - nodeW - 4, left));
+      top = Math.max(4, Math.min(h - nodeH - 4, top));
+
+      nodes += `<button class="ecosystem-node" data-node="${i}" style="left:${left}px;top:${top}px;animation-delay:${delay}s" type="button">
+        <span class="eco-node-top"><span class="eco-num">${it.n || ''}</span><i class="bi bi-${it.icon || 'circle'}"></i></span>
+        <span class="eco-title">${it.t || ''}</span>
+        <span class="eco-desc">${it.d || ''}</span>
+      </button>`;
+    });
+
+    svg += `</svg>`;
+    el.innerHTML = svg + nodes;
+
+    const nodeEls = Array.from(el.querySelectorAll('.ecosystem-node'));
+    nodeEls.forEach(node => {
+      const setActive = () => {
+        const active = node.dataset.node;
+        el.classList.add('has-active-node');
+        nodeEls.forEach(n => n.classList.toggle('is-active', n.dataset.node === active));
+        el.querySelectorAll('.eco-link').forEach(link => link.classList.toggle('is-active', link.dataset.link === active));
+      };
+      const clearActive = () => {
+        el.classList.remove('has-active-node');
+        nodeEls.forEach(n => n.classList.remove('is-active'));
+        el.querySelectorAll('.eco-link').forEach(link => link.classList.remove('is-active'));
+      };
+      node.addEventListener('mouseenter', setActive);
+      node.addEventListener('focus', setActive);
+      node.addEventListener('mouseleave', clearActive);
+      node.addEventListener('blur', clearActive);
+    });
+  }
+
+  // ---------- Business capability map (Slide 3) ----------
+  function buildCapabilityMap(el){
+    const problems = (el.dataset.problems || '').split(',').map(s => s.trim()).filter(Boolean);
+    const icons = (el.dataset.problemIcons || '').split(',').map(s => s.trim());
+    const outcomeParts = (el.dataset.outcome || '').split('|').map(s => s.trim());
+    const w = el.clientWidth || 1040;
+    const h = el.clientHeight || 500;
+    const cx = w / 2;
+    const cy = h / 2;
+    const leftX = Math.max(130, w * 0.2);
+    const rightX = Math.min(w - 160, w * 0.8);
+    const spread = Math.min(360, h * 0.8);
+    const startY = cy - spread / 2;
+    const stepY = problems.length > 1 ? spread / (problems.length - 1) : 0;
+
+    let svg = `<svg class="cap-map-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true">`;
+    let nodes = `<div class="cap-hub" style="left:${cx}px;top:${cy}px">
+      <i class="bi bi-diagram-3"></i>
+      <span>Our approach</span>
+    </div>
+    <div class="cap-outcome" style="left:${rightX}px;top:${cy}px">
+      <span>${outcomeParts[0] || ''}</span>
+      <strong>${outcomeParts[1] || ''}</strong>
+    </div>`;
+
+    problems.forEach((label, i) => {
+      const y = startY + i * stepY;
+      const offsetX = (i % 2 === 0 ? -18 : 18);
+      const px = leftX + offsetX;
+      const delay = (0.18 + i * 0.08).toFixed(2);
+      const id = `cap-path-${i}`;
+      svg += `<path id="${id}" class="cap-path cap-problem-path" d="M ${px + 104} ${y} C ${cx - 200} ${y}, ${cx - 172} ${cy}, ${cx - 76} ${cy}" style="animation-delay:${delay}s"></path>
+        <circle class="cap-particle" r="2.6">
+          <animateMotion dur="4.8s" begin="${(1.1 + i * 0.2).toFixed(2)}s" repeatCount="indefinite">
+            <mpath href="#${id}"></mpath>
+          </animateMotion>
+        </circle>`;
+      nodes += `<button class="cap-problem" style="left:${px}px;top:${y}px;animation-delay:${delay}s" type="button">
+        <i class="bi bi-${icons[i] || 'exclamation-triangle'}"></i>
+        <span>${label}</span>
+      </button>`;
+    });
+
+    svg += `<path id="cap-solve-path" class="cap-path cap-solve-path" d="M ${cx + 76} ${cy} C ${cx + 180} ${cy}, ${rightX - 190} ${cy}, ${rightX - 128} ${cy}" style="animation-delay:1s"></path>
+      <circle class="cap-particle cap-solve-particle" r="3.4">
+        <animateMotion dur="3.2s" begin="1.8s" repeatCount="indefinite">
+          <mpath href="#cap-solve-path"></mpath>
+        </animateMotion>
+      </circle>
+    </svg>`;
+
+    el.innerHTML = svg + nodes;
+  }
 
   // ---------- Title network (decorative background nodes) ----------
   function buildTitleNetwork(slideEl){
