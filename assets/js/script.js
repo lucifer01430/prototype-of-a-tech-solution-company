@@ -48,25 +48,33 @@
   buildIntroNetwork();
 
   let introFinished = false;
+  const introRevealDelay = 14850;
+
+  setTimeout(() => {
+    introEl.classList.add('intro-ready');
+  }, introRevealDelay);
 
   function enterDeck(){
     if (introFinished) return;
     introFinished = true;
-    introEl.classList.add('hidden');
-    deckEl.classList.add('visible');
-    deckEl.setAttribute('aria-hidden', 'false');
-    setTimeout(() => { activateSlide(0, true); }, 50);
+    introEl.classList.add('entering');
+    setTimeout(() => {
+      introEl.classList.add('hidden');
+      deckEl.classList.add('visible');
+      deckEl.setAttribute('aria-hidden', 'false');
+      setTimeout(() => { activateSlide(0, true); }, 50);
+    }, 220);
   }
 
   document.getElementById('skipIntro').addEventListener('click', enterDeck);
   document.getElementById('enterBtn').addEventListener('click', enterDeck);
-  // Auto-advance shortly after the reveal finishes, in case the user doesn't click
+  // Keep the reveal as an intentional gateway; wait for explicit user action.
   setTimeout(() => {
     if (!introFinished) {
       // Do nothing automatically — wait for explicit user action (Enter/Skip)
       // so the cinematic reveal remains the intentional gateway to the deck.
     }
-  }, 9000);
+  }, 17000);
 
   /* ============================================================
      SLIDE ENGINE
