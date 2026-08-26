@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building a Technology Solutions Company</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ===================== CINEMATIC INTRO ===================== -->
+<div id="intro" class="intro">
+  <div class="intro-grid"></div>
+  <svg id="intro-svg" class="intro-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"></svg>
+
+  <div class="intro-copy">
+    <p class="intro-line" data-line="1">What can a few young techies actually build?</p>
+    <p class="intro-line" data-line="2">What if these technologies worked together?</p>
+  </div>
+
+  <div class="intro-reveal">
+    <span class="intro-eyebrow">Technology &amp; Software Development</span>
+    <h1 class="intro-title">Building a Technology<br>Solutions Company</h1>
+    <p class="intro-subtitle">From Technical Expertise to Complete B2B Digital Solutions</p>
+    <button id="enterBtn" class="btn-enter">Enter Presentation <i class="bi bi-arrow-right"></i></button>
+  </div>
+
+  <button id="skipIntro" class="skip-btn">Skip Intro</button>
+</div>
+
+<!-- ===================== PRESENTATION SHELL ===================== -->
+<div id="deck" class="deck" aria-hidden="true">
+
+  <!-- Ambient background -->
+  <div class="deck-bg">
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+  </div>
+
+  <!-- Top chrome -->
+  <header class="deck-chrome-top">
+    <div class="brand"><span class="brand-dot"></span>TECH SOLUTIONS CO.</div>
+    <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+    <button id="fullscreenBtn" class="chrome-btn" aria-label="Toggle fullscreen"><i class="bi bi-arrows-fullscreen"></i></button>
+  </header>
+
+  <!-- Slides -->
+  <main id="slides" class="slides">
+
+    <!-- SLIDE 00 — TITLE -->
+    <section class="slide" data-index="0" data-format="title">
+      <div class="slide-inner title-inner">
+        <svg class="title-network" viewBox="0 0 1200 700"></svg>
+        <span class="eyebrow">Technology &amp; Software Development</span>
+        <h1 class="title-main">Building a Technology<br>Solutions Company</h1>
+        <p class="title-sub">From Technical Expertise to Complete B2B Digital Solutions</p>
+        <div class="title-meta">
+          <span>Presented by <strong>Harsh</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 01 — THE VISION -->
+    <section class="slide" data-index="1" data-format="vision">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">01 — The Vision</span>
+          <h2 class="slide-title">Our Vision</h2>
+        </div>
+        <p class="slide-lead">Build a technology company that helps businesses digitize, automate, secure and scale their operations through complete technology solutions.</p>
+        <p class="slide-note">We aim to become a single technology partner for businesses:</p>
+        <div class="pipeline pipeline-horizontal" data-diagram="pipeline"
+             data-items="Understand,Design,Build,Integrate,Automate,Secure,Maintain"
+             data-icons="search,palette,code-slash,plug,gear-wide-connected,shield-check,tools"></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 02 — WHAT CAN WE OFFER -->
+    <section class="slide" data-index="2" data-format="radial">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">02 — Capabilities</span>
+          <h2 class="slide-title">Complete Technology Solutions for Businesses</h2>
+          <p class="slide-note">7 core solution areas</p>
+        </div>
+        <div class="radial-diagram" data-diagram="radial"
+             data-center="Technology<br>Solutions Co."
+             data-center-icon="diagram-3"
+             data-items='[
+                {"n":"01","t":"Software Development","d":"Websites • Web Apps • Mobile Apps • Custom Software","icon":"code-square"},
+                {"n":"02","t":"Business Systems","d":"CRM • CMS • ERP • SaaS • Dashboards","icon":"kanban"},
+                {"n":"03","t":"AI &amp; Automation","d":"AI Integration • Workflow Automation • AI Assistants","icon":"cpu"},
+                {"n":"04","t":"Cybersecurity","d":"Security Audits • App Security • Compliance","icon":"shield-lock"},
+                {"n":"05","t":"IoT &amp; Smart Solutions","d":"Smart Rooms • Sensors • Device Integration","icon":"broadcast-pin"},
+                {"n":"06","t":"UI/UX &amp; Design","d":"UI Design • UX • Figma • Design Systems","icon":"palette2"},
+                {"n":"07","t":"Cloud &amp; Infrastructure","d":"Deployment • Hosting • APIs • Databases","icon":"cloud-arrow-up"}
+             ]'></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 03 — B2B OPPORTUNITY -->
+    <section class="slide" data-index="3" data-format="transform">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">03 — The B2B Opportunity</span>
+          <h2 class="slide-title">Businesses Don't Need Just Software</h2>
+        </div>
+        <div class="transform-wrap">
+          <div class="transform-col transform-problems">
+            <span class="transform-label">Businesses usually have problems like</span>
+            <ul class="problem-list">
+              <li><i class="bi bi-exclamation-triangle"></i>Manual processes</li>
+              <li><i class="bi bi-exclamation-triangle"></i>Scattered customer data</li>
+              <li><i class="bi bi-exclamation-triangle"></i>Repetitive work</li>
+              <li><i class="bi bi-exclamation-triangle"></i>Poor communication</li>
+              <li><i class="bi bi-exclamation-triangle"></i>Security risks</li>
+              <li><i class="bi bi-exclamation-triangle"></i>Lack of business analytics</li>
+              <li><i class="bi bi-exclamation-triangle"></i>Multiple disconnected systems</li>
+              <li><i class="bi bi-exclamation-triangle"></i>Outdated websites/software</li>
+            </ul>
+          </div>
+          <div class="transform-arrow"><i class="bi bi-arrow-right"></i></div>
+          <div class="transform-col transform-outcome">
+            <span class="transform-label">Our approach</span>
+            <p class="outcome-statement">Don't just sell a product.<br><span>Solve the business problem.</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 04 — FROM PROBLEM TO SOLUTION -->
+    <section class="slide" data-index="4" data-format="vertical-pipeline">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">04 — Our Methodology</span>
+          <h2 class="slide-title">From Problem to Solution</h2>
+        </div>
+        <div class="pipeline pipeline-vertical" data-diagram="pipeline"
+             data-items="Business Problem,Requirement Analysis,Technology Strategy,UI/UX Design,Software Development,AI / API / IoT Integration,Security,Deployment,Maintenance &amp; Support"
+             data-icons="exclamation-circle,search,diagram-3,palette,code-slash,plug,shield-check,rocket-takeoff,tools"></div>
+        <p class="slide-footnote">One company. Complete technology lifecycle.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 05 — HOTEL EXAMPLE -->
+    <section class="slide" data-index="5" data-format="ecosystem">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">05 — Applied Example</span>
+          <h2 class="slide-title">Complete Digital Transformation for a Hotel</h2>
+        </div>
+        <div class="ecosystem-diagram" data-diagram="ecosystem" data-center="Hotel" data-center-icon="building">
+          <div class="eco-group" data-group="Customer Side" data-icon="person-check" data-color="cyan"
+               data-items="Website,Online Booking,AI Chat Assistant,WhatsApp Integration,Digital Payments"></div>
+          <div class="eco-group" data-group="Management Side" data-icon="clipboard-data" data-color="blue"
+               data-items="CRM,Reservation Management,Staff Management,Billing,Analytics Dashboard"></div>
+          <div class="eco-group" data-group="Automation Side" data-icon="gear-wide-connected" data-color="violet"
+               data-items="AI-based Enquiries,Automated Follow-ups,Guest Communication,Smart-room Automation"></div>
+          <div class="eco-group" data-group="Security Side" data-icon="shield-lock" data-color="teal"
+               data-items="Application Security,Access Control,Security Audits"></div>
+        </div>
+        <p class="slide-footnote result-footnote"><i class="bi bi-graph-up-arrow"></i> Better Customer Experience + Less Manual Work + Better Data + More Operational Efficiency</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 06 — AI & AUTOMATION -->
+    <section class="slide" data-index="6" data-format="dataflow">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">06 — AI &amp; Automation</span>
+          <h2 class="slide-title">AI as a Business Automation Layer</h2>
+          <p class="slide-note">AI integrated into existing business workflows — not a standalone product.</p>
+        </div>
+        <div class="content-split">
+          <div class="chip-cloud" data-diagram="chipcloud"
+               data-items="AI Customer Support,AI Lead Qualification,AI Chatbots,Automated Follow-ups,Document Processing,AI Reports &amp; Insights,Content Automation,Internal AI Assistants,CRM + AI Integration,WhatsApp + AI Automation"></div>
+        </div>
+        <div class="dataflow" data-diagram="dataflow"
+             data-items="Customer Enquiry,AI,Qualification,CRM,Follow-up,Sales Team"
+             data-icons="person,cpu,check2-circle,kanban,arrow-repeat,people"></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 07 — SOFTWARE & SAAS -->
+    <section class="slide" data-index="7" data-format="funnel">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">07 — Software &amp; SaaS</span>
+          <h2 class="slide-title">Build Once. Scale as a Product.</h2>
+          <p class="slide-note">Identify recurring business problems and convert them into SaaS products.</p>
+        </div>
+        <div class="content-split">
+          <div class="chip-cloud" data-diagram="chipcloud"
+               data-items="Gym Management,Hotel Management,CRM,HR Management,Inventory Management,Appointment Management,Billing &amp; Invoicing,Lead Management,Industry-specific Business Software"></div>
+        </div>
+        <div class="funnel-diagram" data-diagram="funnel" data-items="Build,Subscribe,Scale,Maintain"
+             data-icons="hammer,person-plus,graph-up-arrow,arrow-repeat"></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 08 — IOT -->
+    <section class="slide" data-index="8" data-format="architecture">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">08 — IoT &amp; Smart Solutions</span>
+          <h2 class="slide-title">Connecting Physical Operations with Software</h2>
+        </div>
+        <div class="content-split">
+          <div class="split-col">
+            <span class="split-label"><i class="bi bi-building"></i> Hospitality</span>
+            <ul class="tag-list">
+              <li>Smart Rooms</li><li>Energy Management</li><li>Automated Lighting</li><li>AC Control</li><li>Guest Access</li>
+            </ul>
+          </div>
+          <div class="split-col">
+            <span class="split-label"><i class="bi bi-diagram-3"></i> Business / Industry</span>
+            <ul class="tag-list">
+              <li>Device Monitoring</li><li>Sensors</li><li>Alerts</li><li>Asset Tracking</li><li>Automation</li>
+            </ul>
+          </div>
+        </div>
+        <div class="dataflow" data-diagram="dataflow"
+             data-items="Device,Internet / API,Backend,Dashboard,Automation"
+             data-icons="cpu,router,server,speedometer2,gear-wide-connected"></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 09 — CYBERSECURITY -->
+    <section class="slide" data-index="9" data-format="shield">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">09 — Cybersecurity</span>
+          <h2 class="slide-title">Security as a Core Business Requirement</h2>
+        </div>
+        <div class="shield-diagram" data-diagram="shield"
+             data-items="Cybersecurity Audits,Website / Application Security,Infrastructure Security,Vulnerability Assessment,Access Control,Security Policies,Backup &amp; Recovery,Security Awareness,Compliance Support"></div>
+        <div class="callout-note">
+          <i class="bi bi-info-circle"></i>
+          Specialized cybersecurity work will require dedicated expertise / certified professionals where necessary.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10 — IN-HOUSE CAPABILITY -->
+    <section class="slide" data-index="10" data-format="capability-split">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">10 — Technical Capability</span>
+          <h2 class="slide-title">What Can We Build In-House?</h2>
+        </div>
+        <div class="capability-split">
+          <div class="cap-col cap-green">
+            <span class="cap-heading"><span class="cap-dot"></span> Can Be Developed In-House</span>
+            <ul class="cap-list">
+              <li>Web Development</li><li>Web Applications</li><li>CRM / CMS</li><li>Custom Business Software</li>
+              <li>SaaS MVPs</li><li>APIs &amp; Integrations</li><li>AI Integrations</li><li>Business Automation</li>
+              <li>Database Systems</li><li>Payment Integrations</li><li>Application Deployment</li><li>UI Implementation</li>
+            </ul>
+          </div>
+          <div class="cap-col cap-amber">
+            <span class="cap-heading"><span class="cap-dot"></span> Requires Additional Expertise</span>
+            <ul class="cap-list">
+              <li>Advanced Cybersecurity</li><li>Hardware Engineering</li><li>Embedded Systems</li>
+              <li>Advanced IoT</li><li>Enterprise Cloud Architecture</li><li>Legal / Compliance Consulting</li>
+            </ul>
+          </div>
+        </div>
+        <p class="slide-footnote"><i class="bi bi-diagram-2"></i> Build Core Capabilities In-House + Collaborate with Specialists</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 11 — TEAM STRUCTURE -->
+    <section class="slide" data-index="11" data-format="radial">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">11 — Team Structure</span>
+          <h2 class="slide-title">Building a Multi-Disciplinary Technology Team</h2>
+        </div>
+        <div class="radial-diagram" data-diagram="radial"
+             data-center="Technology<br>Team"
+             data-center-icon="people-fill"
+             data-items='[
+                {"n":"","t":"Software &amp; AI","d":"Web • Backend • SaaS • AI • Automation • APIs","icon":"cpu"},
+                {"n":"","t":"Cybersecurity","d":"Security • Auditing • Infrastructure • Compliance","icon":"shield-lock"},
+                {"n":"","t":"Design","d":"UI • UX • Figma • Branding","icon":"palette2"},
+                {"n":"","t":"IoT &amp; Hardware","d":"Sensors • Devices • Smart Automation","icon":"broadcast-pin"},
+                {"n":"","t":"Business &amp; Operations","d":"Sales • Client Relations • Partnerships • Finance","icon":"briefcase"},
+                {"n":"","t":"Leadership / Mentorship","d":"Business Direction • Network • Strategy","icon":"compass"}
+             ]'></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12 — MY TECHNICAL CONTRIBUTION -->
+    <section class="slide" data-index="12" data-format="personal">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">12 — Personal Contribution</span>
+          <h2 class="slide-title">My Role — Software &amp; AI Solutions</h2>
+          <p class="slide-note">I can independently take ownership of:</p>
+        </div>
+        <div class="personal-map" data-diagram="personal" data-center="HARSH"
+             data-items='[
+               {"t":"Software Development","d":"Websites • Web Apps • Custom Software • CRM/CMS • SaaS MVPs","icon":"code-square"},
+               {"t":"AI &amp; Automation","d":"AI API Integration • AI Assistants • Workflow Automation","icon":"cpu"},
+               {"t":"Technical Integration","d":"Payment Gateways • Third-party APIs • Databases • Auth","icon":"plug"},
+               {"t":"Deployment","d":"Linux Servers • Web Server Config • Domain/SSL • Git &amp; GitHub","icon":"hdd-rack"}
+             ]'></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13 — MY ROLE WITHIN LARGER VISION -->
+    <section class="slide" data-index="13" data-format="collab">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">13 — Scope of Ownership</span>
+          <h2 class="slide-title">Where I Fit</h2>
+        </div>
+        <div class="collab-diagram" data-diagram="collab"
+             data-own="Software Development + AI Integration + Business Automation"
+             data-specialists="Cybersecurity,IoT / Hardware,Advanced Cloud Infrastructure,Legal / Compliance,Specialized Design"></div>
+        <p class="slide-footnote"><i class="bi bi-bullseye"></i> My objective: convert business requirements into scalable technology solutions.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 14 — HOW WE CAN START -->
+    <section class="slide" data-index="14" data-format="timeline">
+      <div class="slide-inner">
+        <div class="slide-head">
+          <span class="slide-eyebrow">14 — Roadmap</span>
+          <h2 class="slide-title">Start Small. Validate. Scale.</h2>
+        </div>
+        <div class="timeline" data-diagram="timeline"
+             data-items='[
+               {"p":"Phase 1","t":"Foundation","d":"Core services • Team capabilities • Target industries • Required specialists • Technology stack • Business model"},
+               {"p":"Phase 2","t":"First B2B Solutions","d":"Start with 2–3 highly deliverable services"},
+               {"p":"Phase 3","t":"Productization","d":"Convert recurring problems into SaaS + Automation + AI Solutions"},
+               {"p":"Phase 4","t":"Scale","d":"Build products, services, partnerships and specialized teams"}
+             ]'></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15 — FINAL: THE BIGGER PICTURE -->
+    <section class="slide" data-index="15" data-format="final">
+      <div class="slide-inner">
+        <div class="slide-head slide-head-final">
+          <span class="slide-eyebrow">Final — The Bigger Picture</span>
+          <h2 class="slide-title">From Developers to a Technology Solutions Company</h2>
+          <p class="slide-lead final-quote">We don't have to limit ourselves to <span>"We build websites."</span></p>
+        </div>
+        <p class="slide-note final-intro">We can build a company that helps businesses:</p>
+        <div class="pillar-stairs" data-diagram="pillars"
+             data-items='[
+               {"t":"Digitize","d":"Turn manual processes into software.","icon":"file-earmark-code"},
+               {"t":"Automate","d":"Reduce repetitive work using AI and technology.","icon":"gear-wide-connected"},
+               {"t":"Integrate","d":"Connect different business systems.","icon":"plug"},
+               {"t":"Secure","d":"Protect applications, infrastructure and data.","icon":"shield-lock"},
+               {"t":"Innovate","d":"Build SaaS, AI and IoT-based solutions.","icon":"lightbulb"},
+               {"t":"Scale","d":"Create technology products that serve multiple businesses.","icon":"graph-up-arrow"}
+             ]'></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom chrome -->
+  <footer class="deck-chrome-bottom">
+    <div class="slide-counter"><span id="counterCurrent">01</span> / <span id="counterTotal">16</span></div>
+    <div class="nav-controls">
+      <button id="prevBtn" class="chrome-btn" aria-label="Previous slide"><i class="bi bi-chevron-up"></i></button>
+      <button id="nextBtn" class="chrome-btn" aria-label="Next slide"><i class="bi bi-chevron-down"></i></button>
+    </div>
+    <div class="signature">Designed &amp; Developed by Harsh</div>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/script.js"></script>
+</body>
+</html>
