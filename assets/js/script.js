@@ -239,126 +239,208 @@
     el.innerHTML = html;
   }
 
-  // ---------- Technology ecosystem (Slide 2) ----------
+  // ---------- Technology ecosystem (Slide 2 — premium) ----------
   function buildTechEcosystem(el){
     let items;
     try { items = JSON.parse(el.dataset.items); } catch(e) { items = []; }
     const centerHtml = el.dataset.center || '';
     const centerIcon = el.dataset.centerIcon || 'diagram-3';
-    const w = el.clientWidth || 1040;
-    const h = el.clientHeight || 520;
+    const w = el.clientWidth || 1100;
+    const h = el.clientHeight || 560;
     const cx = w / 2;
-    const cy = h * 0.61;
-    const rx = Math.max(250, Math.min(w * 0.36, 410));
-    const ry = Math.max(165, Math.min(h * 0.4, 220));
-    const nodeW = w < 900 ? 154 : 188;
-    const nodeH = w < 900 ? 88 : 106;
 
+    // Center slightly lower to balance top/bottom clearance
+    const cy = h * 0.53;
+    const rx = Math.max(270, Math.min(w * 0.38, 410));
+    const ry = Math.max(180, Math.min(h * 0.38, 225));
+    const nodeW = 178;
+    const nodeH = 100; // estimated card height
+
+    // --- SVG: orbit rings → lines → endpoint dots → particles ---
     let svg = `<svg class="ecosystem-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true">
-      <circle class="eco-orbit eco-orbit-1" cx="${cx}" cy="${cy}" r="${Math.min(rx, ry) + 58}"></circle>
-      <ellipse class="eco-orbit eco-orbit-2" cx="${cx}" cy="${cy}" rx="${rx + 70}" ry="${ry + 58}"></ellipse>`;
-    let nodes = `<div class="ecosystem-center" style="left:${cx}px;top:${cy}px">
-      <i class="bi bi-${centerIcon}"></i><span>${centerHtml}</span>
-    </div>`;
+      <ellipse class="eco-orbit eco-orbit-1" cx="${cx}" cy="${cy}" rx="${rx - 28}" ry="${ry - 18}"></ellipse>
+      <ellipse class="eco-orbit eco-orbit-2" cx="${cx}" cy="${cy}" rx="${rx + 48}" ry="${ry + 34}"></ellipse>`;
 
-    items.forEach((it, i) => {
-      const angle = (Math.PI * 2 * i / items.length) - Math.PI / 2;
-      const nx = cx + rx * Math.cos(angle);
-      const ny = cy + ry * Math.sin(angle);
+    const nodeCount = items.length;
+    const anchors = items.map((_, i) => {
+      const angle = (Math.PI * 2 * i / nodeCount) - Math.PI / 2;
+      return { x: cx + rx * Math.cos(angle), y: cy + ry * Math.sin(angle) };
+    });
+
+    // Animation sequence:
+    // Step 1 (0.1s): orbit rings  [handled by CSS .eco-orbit]
+    // Step 2 (0.5s): center node  [handled by CSS .ecosystem-center]
+    // Step 3 (0.9s+): lines draw outward one-by-one
+    // Step 4 (1.0s+): cards appear at line tips
+    // Step 5 (2.2s+): data particles flow
+
+    anchors.forEach((a, i) => {
+      const lineDelay  = (0.90 + i * 0.14).toFixed(2);
+      const dotDelay   = (1.00 + i * 0.14).toFixed(2);
+      const cardDelay  = (1.02 + i * 0.14).toFixed(2);
+      const partDelay  = (2.20 + i * 0.22).toFixed(2);
       const id = `eco-path-${i}`;
-      const delay = (0.28 + i * 0.13).toFixed(2);
-      svg += `<path id="${id}" class="eco-link" data-link="${i}" d="M ${cx} ${cy} L ${nx.toFixed(1)} ${ny.toFixed(1)}" style="animation-delay:${delay}s"></path>
-        <circle class="eco-particle" r="3" style="animation-delay:${(1.2 + i * 0.34).toFixed(2)}s">
-          <animateMotion dur="4.2s" begin="${(1.2 + i * 0.34).toFixed(2)}s" repeatCount="indefinite">
+
+      svg += `<path id="${id}" class="eco-link" data-link="${i}"
+          d="M ${cx.toFixed(1)} ${cy.toFixed(1)} L ${a.x.toFixed(1)} ${a.y.toFixed(1)}"
+          style="animation-delay:${lineDelay}s"></path>
+        <circle class="eco-endpoint-dot" cx="${a.x.toFixed(1)}" cy="${a.y.toFixed(1)}" r="3"
+          style="animation-delay:${dotDelay}s"></circle>
+        <circle class="eco-particle" r="2.6">
+          <animateMotion dur="3.6s" begin="${partDelay}s" repeatCount="indefinite">
             <mpath href="#${id}"></mpath>
           </animateMotion>
         </circle>`;
 
-      let left = nx - nodeW / 2;
-      let top = ny - nodeH / 2;
-      left = Math.max(4, Math.min(w - nodeW - 4, left));
-      top = Math.max(4, Math.min(h - nodeH - 4, top));
+      // Card position — clamp to container
+      let left = a.x - nodeW / 2;
+      let top  = a.y - nodeH / 2;
+      left = Math.max(2, Math.min(w - nodeW - 2, left));
+      top  = Math.max(2, Math.min(h - nodeH - 2, top));
 
-      nodes += `<button class="ecosystem-node" data-node="${i}" style="left:${left}px;top:${top}px;animation-delay:${delay}s" type="button">
-        <span class="eco-node-top"><span class="eco-num">${it.n || ''}</span><i class="bi bi-${it.icon || 'circle'}"></i></span>
+      // Store card position for DOM build pass below
+      anchors[i]._left      = left;
+      anchors[i]._top       = top;
+      anchors[i]._cardDelay = cardDelay;
+    });
+
+    svg += `</svg>`;
+
+    // Center hub
+    let nodes = `<div class="ecosystem-center" style="left:${cx}px;top:${cy}px">
+      <i class="bi bi-${centerIcon}"></i><span>${centerHtml}</span>
+    </div>`;
+
+    // Capability cards
+    anchors.forEach((a, i) => {
+      const it = items[i];
+      nodes += `<button class="ecosystem-node" data-node="${i}"
+          style="left:${a._left.toFixed(0)}px;top:${a._top.toFixed(0)}px;animation-delay:${a._cardDelay}s"
+          type="button" aria-label="${it.t || ''}">
+        <span class="eco-node-top">
+          <span class="eco-num">${it.n || ''}</span>
+          <i class="bi bi-${it.icon || 'circle'}"></i>
+        </span>
         <span class="eco-title">${it.t || ''}</span>
         <span class="eco-desc">${it.d || ''}</span>
       </button>`;
     });
 
-    svg += `</svg>`;
     el.innerHTML = svg + nodes;
 
+    // Hover: highlight active node + its line
     const nodeEls = Array.from(el.querySelectorAll('.ecosystem-node'));
     nodeEls.forEach(node => {
       const setActive = () => {
-        const active = node.dataset.node;
+        const idx = node.dataset.node;
         el.classList.add('has-active-node');
-        nodeEls.forEach(n => n.classList.toggle('is-active', n.dataset.node === active));
-        el.querySelectorAll('.eco-link').forEach(link => link.classList.toggle('is-active', link.dataset.link === active));
+        nodeEls.forEach(n => n.classList.toggle('is-active', n.dataset.node === idx));
+        el.querySelectorAll('.eco-link').forEach(l => l.classList.toggle('is-active', l.dataset.link === idx));
       };
       const clearActive = () => {
         el.classList.remove('has-active-node');
         nodeEls.forEach(n => n.classList.remove('is-active'));
-        el.querySelectorAll('.eco-link').forEach(link => link.classList.remove('is-active'));
+        el.querySelectorAll('.eco-link').forEach(l => l.classList.remove('is-active'));
       };
       node.addEventListener('mouseenter', setActive);
-      node.addEventListener('focus', setActive);
+      node.addEventListener('focus',      setActive);
       node.addEventListener('mouseleave', clearActive);
-      node.addEventListener('blur', clearActive);
+      node.addEventListener('blur',       clearActive);
     });
   }
 
-  // ---------- Business capability map (Slide 3) ----------
+  // ---------- Business capability map (Slide 4 — premium) ----------
   function buildCapabilityMap(el){
     const problems = (el.dataset.problems || '').split(',').map(s => s.trim()).filter(Boolean);
     const icons = (el.dataset.problemIcons || '').split(',').map(s => s.trim());
     const outcomeParts = (el.dataset.outcome || '').split('|').map(s => s.trim());
-    const w = el.clientWidth || 1040;
-    const h = el.clientHeight || 500;
+    const w = el.clientWidth || 1100;
+    const h = el.clientHeight || 520;
     const cx = w / 2;
     const cy = h / 2;
-    const leftX = Math.max(130, w * 0.2);
-    const rightX = Math.min(w - 160, w * 0.8);
-    const spread = Math.min(360, h * 0.8);
-    const startY = cy - spread / 2;
-    const stepY = problems.length > 1 ? spread / (problems.length - 1) : 0;
+
+    // Layout zones
+    const probZoneRight = cx - 100;        // right edge of problem column area
+    const outcomeLeft   = cx + 110;        // left edge of outcome card
+    const outcomeX      = Math.min(w - 180, cx + w * 0.28); // center of outcome card
+    const hubR          = 77;              // hub radius for attachment offset
+
+    // Split 8 problems into two columns
+    const colA = problems.filter((_, i) => i % 2 === 0);  // left col  (even indices)
+    const colB = problems.filter((_, i) => i % 2 !== 0);  // right col (odd indices)
+    const cardW = 185;
+    const cardH = 38;
+    const colAx = Math.max(cardW / 2 + 4, cx * 0.18);       // left column center-x
+    const colBx = Math.max(cardW / 2 + 4, cx * 0.46);       // right column center-x
+    const vSpread = Math.min(h * 0.82, 420);
+
+    // y positions for each column
+    function colYs(count) {
+      if (count === 1) return [cy];
+      const step = vSpread / (count - 1);
+      return Array.from({ length: count }, (_, i) => cy - vSpread / 2 + i * step);
+    }
+    const ysA = colYs(colA.length);
+    const ysB = colYs(colB.length);
 
     let svg = `<svg class="cap-map-svg" viewBox="0 0 ${w} ${h}" aria-hidden="true">`;
-    let nodes = `<div class="cap-hub" style="left:${cx}px;top:${cy}px">
-      <i class="bi bi-diagram-3"></i>
-      <span>Our approach</span>
-    </div>
-    <div class="cap-outcome" style="left:${rightX}px;top:${cy}px">
-      <span>${outcomeParts[0] || ''}</span>
-      <strong>${outcomeParts[1] || ''}</strong>
-    </div>`;
+    let nodes = '';
 
-    problems.forEach((label, i) => {
-      const y = startY + i * stepY;
-      const offsetX = (i % 2 === 0 ? -18 : 18);
-      const px = leftX + offsetX;
-      const delay = (0.18 + i * 0.08).toFixed(2);
-      const id = `cap-path-${i}`;
-      svg += `<path id="${id}" class="cap-path cap-problem-path" d="M ${px + 104} ${y} C ${cx - 200} ${y}, ${cx - 172} ${cy}, ${cx - 76} ${cy}" style="animation-delay:${delay}s"></path>
-        <circle class="cap-particle" r="2.6">
-          <animateMotion dur="4.8s" begin="${(1.1 + i * 0.2).toFixed(2)}s" repeatCount="indefinite">
+    // ---- Draw problem cards & inbound curves ----
+    problems.forEach((label, origIdx) => {
+      const isColA = origIdx % 2 === 0;
+      const colIdx = Math.floor(origIdx / 2);
+      const px = isColA ? colAx : colBx;
+      const py = isColA ? ysA[colIdx] : ysB[colIdx];
+      const cardDelay = (0.12 + origIdx * 0.09).toFixed(2);
+      const lineDelay = (0.2 + origIdx * 0.09).toFixed(2);
+      const particleDelay = (1.0 + origIdx * 0.18).toFixed(2);
+      const id = `cap-path-${origIdx}`;
+      // Curve from right edge of card toward hub left
+      const startX = px + cardW / 2;
+      svg += `<path id="${id}" class="cap-path"
+          d="M ${startX.toFixed(1)} ${py.toFixed(1)} C ${(startX + 60).toFixed(1)} ${py.toFixed(1)}, ${(cx - hubR - 60).toFixed(1)} ${cy.toFixed(1)}, ${(cx - hubR).toFixed(1)} ${cy.toFixed(1)}"
+          style="animation-delay:${lineDelay}s"></path>
+        <circle class="cap-particle" r="2.4">
+          <animateMotion dur="4.6s" begin="${particleDelay}s" repeatCount="indefinite">
             <mpath href="#${id}"></mpath>
           </animateMotion>
         </circle>`;
-      nodes += `<button class="cap-problem" style="left:${px}px;top:${y}px;animation-delay:${delay}s" type="button">
-        <i class="bi bi-${icons[i] || 'exclamation-triangle'}"></i>
+
+      nodes += `<button class="cap-problem"
+          style="left:${px}px;top:${py}px;width:${cardW}px;animation-delay:${cardDelay}s"
+          type="button">
+        <i class="bi bi-${icons[origIdx] || 'exclamation-triangle'}"></i>
         <span>${label}</span>
       </button>`;
     });
 
-    svg += `<path id="cap-solve-path" class="cap-path cap-solve-path" d="M ${cx + 76} ${cy} C ${cx + 180} ${cy}, ${rightX - 190} ${cy}, ${rightX - 128} ${cy}" style="animation-delay:1s"></path>
-      <circle class="cap-particle cap-solve-particle" r="3.4">
-        <animateMotion dur="3.2s" begin="1.8s" repeatCount="indefinite">
+    // ---- Hub → Outcome connection line ----
+    const solveEndX = outcomeX - cardW / 2 - 4;
+    svg += `<path id="cap-solve-path" class="cap-solve-path"
+        d="M ${(cx + hubR).toFixed(1)} ${cy.toFixed(1)} L ${solveEndX.toFixed(1)} ${cy.toFixed(1)}"
+        style="animation-delay:1.1s"></path>
+      <circle class="cap-solve-particle" r="3">
+        <animateMotion dur="2.8s" begin="2.2s" repeatCount="indefinite">
           <mpath href="#cap-solve-path"></mpath>
         </animateMotion>
       </circle>
     </svg>`;
+
+    // ---- Central hub node ----
+    nodes += `<div class="cap-hub" style="left:${cx}px;top:${cy}px">
+      <i class="bi bi-diagram-3"></i>
+      <div class="cap-hub-label">Our<br>Approach</div>
+    </div>`;
+
+    // ---- Outcome / solution card ----
+    const outcomeW = Math.min(230, w - outcomeX - 10);
+    nodes += `<div class="cap-outcome" style="left:${outcomeX}px;top:${cy}px;width:${outcomeW}px">
+      <span class="cap-outcome-eyebrow">The Solution</span>
+      <div class="cap-outcome-divider"></div>
+      <span class="cap-outcome-sub">${outcomeParts[0] || ''}</span>
+      <span class="cap-outcome-main">${outcomeParts[1] || ''}</span>
+    </div>`;
 
     el.innerHTML = svg + nodes;
   }
