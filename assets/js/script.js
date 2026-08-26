@@ -66,8 +66,11 @@
     }, 220);
   }
 
-  document.getElementById('skipIntro').addEventListener('click', enterDeck);
-  document.getElementById('enterBtn').addEventListener('click', enterDeck);
+  const enterBtn = document.getElementById('enterBtn');
+  if (enterBtn) {
+    enterBtn.addEventListener('click', enterDeck);
+  }
+  
   // Keep the reveal as an intentional gateway; wait for explicit user action.
   setTimeout(() => {
     if (!introFinished) {
@@ -180,6 +183,7 @@
       else if (kind === 'dataflow') buildDataflow(el);
       else if (kind === 'funnel') buildFunnel(el);
       else if (kind === 'shield') buildShield(el);
+      else if (kind === 'captree') buildCapTree(el);
       else if (kind === 'personal') buildPersonal(el);
       else if (kind === 'collab') buildCollab(el);
       else if (kind === 'timeline') buildTimeline(el);
@@ -487,28 +491,26 @@
     const centerHtml = el.dataset.center || '';
     const centerIcon = el.dataset.centerIcon || 'diagram-3';
 
-    const w = el.clientWidth || 900;
+    const w = el.clientWidth || 1000;
     const h = el.clientHeight || 520;
     const cx = w/2, cy = h/2;
-    const radius = Math.min(w, h) * 0.40;
+    
+    // Use smaller elliptical bounds so nodes don't overflow when centered
+    const rx = w * 0.34;
+    const ry = h * 0.36;
 
     let svgHtml = `<svg class="radial-svg" viewBox="0 0 ${w} ${h}">`;
     let nodesHtml = '';
 
     items.forEach((it, i) => {
       const angle = (Math.PI * 2 * i / items.length) - Math.PI/2;
-      const nx = cx + radius * Math.cos(angle);
-      const ny = cy + radius * Math.sin(angle);
+      const nx = cx + rx * Math.cos(angle);
+      const ny = cy + ry * Math.sin(angle);
       const delay = (0.25 + i*0.12).toFixed(2);
 
       svgHtml += `<line class="animate" x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" style="animation-delay:${delay}s"></line>`;
 
-      const nodeW = 168, nodeH = 92;
-      let left = nx - nodeW/2, top = ny - nodeH/2;
-      left = Math.max(4, Math.min(w - nodeW - 4, left));
-      top = Math.max(4, Math.min(h - nodeH - 4, top));
-
-      nodesHtml += `<div class="radial-node" style="left:${left}px;top:${top}px;animation-delay:${delay}s">
+      nodesHtml += `<div class="radial-node" style="left:${nx}px;top:${ny}px;animation-delay:${delay}s">
         <div class="rn-top">
           ${it.n ? `<span class="rn-num">${it.n}</span>` : ''}
           <span class="rn-icon">${icon(it.icon || 'circle')}</span>
@@ -581,27 +583,150 @@
 
   // ---------- Shield (cybersecurity concentric layers) ----------
   function buildShield(el){
-    const items = (el.dataset.items || '').split(',').map(s => s.trim());
-    const w = el.clientWidth || 640, h = el.clientHeight || 460;
-    const cx = w/2, cy = h/2;
-    const ringOuter = Math.min(w,h) * 0.94;
-    const ringInner = Math.min(w,h) * 0.62;
-    const radius = Math.min(w,h) * 0.42;
+    const w = el.clientWidth || 1100;
+    const h = el.clientHeight || 500;
+    const cx = w/2;
+    const cy = h * 0.52; // Shifted center slightly
 
-    let html = `
-      <div class="shield-ring" style="width:${ringOuter}px;height:${ringOuter}px;left:${cx - ringOuter/2}px;top:${cy - ringOuter/2}px;animation-delay:.1s"></div>
-      <div class="shield-ring" style="width:${ringInner}px;height:${ringInner}px;left:${cx - ringInner/2}px;top:${cy - ringInner/2}px;animation-delay:.25s"></div>
-      <div class="shield-core"><i class="bi bi-shield-lock-fill"></i></div>`;
+    const layers = [
+      {
+        rx: Math.max(160, w * 0.18),
+        ry: Math.max(70, h * 0.16),
+        items: ['Website / Application Security', 'Access Control']
+      },
+      {
+        rx: Math.max(290, w * 0.32),
+        ry: Math.max(125, h * 0.28),
+        items: ['Cybersecurity Audits', 'Vulnerability Assessment', 'Compliance Support', 'Security Policies']
+      },
+      {
+        rx: Math.max(410, w * 0.44),
+        ry: Math.max(170, h * 0.38),
+        items: ['Infrastructure Security', 'Backup & Recovery', 'Security Awareness']
+      }
+    ];
 
-    items.forEach((label, i) => {
-      const angle = (Math.PI * 2 * i / items.length) - Math.PI/2;
-      const nx = cx + radius * Math.cos(angle);
-      const ny = cy + radius * Math.sin(angle);
-      const delay = (0.4 + i*0.1).toFixed(2);
-      html += `<span class="shield-item" style="left:${nx}px;top:${ny}px;transform:translate(-50%,-50%) scale(.7);animation-delay:${delay}s">${label}</span>`;
+    let svg = `<svg class="shield-svg" viewBox="0 0 ${w} ${h}">`;
+    let nodesHtml = '';
+    
+    // Base rings
+    layers.forEach((l, i) => {
+      const cls = i === 1 ? 'shield-ring dashed shield-ring-2' : `shield-ring shield-ring-${i+1}`;
+      svg += `<ellipse class="${cls}" cx="${cx}" cy="${cy}" rx="${l.rx}" ry="${l.ry}"></ellipse>`;
     });
 
-    el.innerHTML = html;
+    // Hub
+    nodesHtml += `<div class="shield-core" style="left:${cx}px;top:${cy}px"><i class="bi bi-shield-lock-fill"></i></div>`;
+
+    // Hand-tuned angles to prevent overlap. 0 is Right, PI/2 is Bottom, PI is Left, -PI/2 is Top
+    const anglesMap = [
+      [0, Math.PI], // Layer 0: Right, Left
+      [Math.PI * 0.18, Math.PI * 0.82, -Math.PI * 0.82, -Math.PI * 0.18], // Layer 1: Bot-Right, Bot-Left, Top-Left, Top-Right
+      [-Math.PI / 2, Math.PI * 0.28, Math.PI * 0.72] // Layer 2: Top-Center, Wide-Bot-Right, Wide-Bot-Left
+    ];
+
+    let globalIdx = 0;
+    layers.forEach((layer, lIdx) => {
+      layer.items.forEach((label, i) => {
+        const angle = anglesMap[lIdx][i];
+
+        const nx = cx + layer.rx * Math.cos(angle);
+        const ny = cy + layer.ry * Math.sin(angle);
+        const lineDelay = (0.7 + globalIdx*0.1).toFixed(2);
+        const nodeDelay = (0.8 + globalIdx*0.1).toFixed(2);
+        const partDelay = (1.5 + globalIdx*0.2).toFixed(2);
+        const id = `sh-path-${globalIdx}`;
+
+        svg += `<path id="${id}" class="shield-link" d="M ${cx.toFixed(1)} ${cy.toFixed(1)} L ${nx.toFixed(1)} ${ny.toFixed(1)}" style="animation-delay:${lineDelay}s"></path>
+                <circle class="shield-particle" r="2.6">
+                  <animateMotion dur="${(3.2 + lIdx*0.4).toFixed(1)}s" begin="${partDelay}s" repeatCount="indefinite">
+                    <mpath href="#${id}"></mpath>
+                  </animateMotion>
+                </circle>`;
+        
+        nodesHtml += `<div class="shield-node" style="left:${nx.toFixed(1)}px;top:${ny.toFixed(1)}px;animation-delay:${nodeDelay}s">${label}</div>`;
+        globalIdx++;
+      });
+    });
+
+    svg += `</svg>`;
+    el.innerHTML = svg + nodesHtml;
+  }
+
+  // ---------- Capability Tree (Slide 10 Build In-House vs Collaborate) ----------
+  function buildCapTree(el){
+    const inhouse = (el.dataset.inhouse || '').split(',').map(s=>s.trim()).filter(Boolean);
+    const specialist = (el.dataset.specialist || '').split(',').map(s=>s.trim()).filter(Boolean);
+    
+    const w = el.clientWidth || 1100;
+    const h = el.clientHeight || 480;
+    
+    // Top center
+    const topX = w / 2;
+    const topY = 16;
+    
+    // Sub hubs
+    const leftHubX = w * 0.28;
+    const rightHubX = w * 0.72;
+    const hubY = 75;
+    
+    let svg = `<svg class="captree-svg" viewBox="0 0 ${w} ${h}">`;
+    let html = '';
+    
+    html += `<div class="captree-top" style="left:${topX}px;top:${topY}px">Technology Solutions Co.</div>`;
+    
+    html += `<div class="captree-hub hub-green" style="left:${leftHubX}px;top:${hubY}px;animation-delay:0.3s">
+                <i class="bi bi-gear-wide-connected"></i> Build In-House
+             </div>`;
+    html += `<div class="captree-hub hub-amber" style="left:${rightHubX}px;top:${hubY}px;animation-delay:0.4s">
+                <i class="bi bi-people-fill"></i> Require Specialists
+             </div>`;
+             
+    // Draw lines from top to hubs
+    svg += `<path class="captree-path draw" d="M ${topX} ${topY+18} L ${topX} ${hubY-30} L ${leftHubX} ${hubY-30} L ${leftHubX} ${hubY-18}" style="animation-delay:0.1s"></path>`;
+    svg += `<path class="captree-path draw" d="M ${topX} ${topY+18} L ${topX} ${hubY-30} L ${rightHubX} ${hubY-30} L ${rightHubX} ${hubY-18}" style="animation-delay:0.2s"></path>`;
+    
+    // Left items (2 columns)
+    const leftStartY = 135;
+    const leftYStep = 45;
+    const leftColOffset = 116; // Leaves exact gap based on 196px fixed width
+    
+    const leftMaxY = leftStartY + Math.floor((inhouse.length-1)/2) * leftYStep;
+    svg += `<path class="captree-path draw trunk" d="M ${leftHubX} ${hubY+15} L ${leftHubX} ${leftMaxY}" style="animation-delay:0.5s"></path>`;
+    
+    inhouse.forEach((item, i) => {
+      const col = i % 2; 
+      const row = Math.floor(i / 2);
+      const nx = leftHubX + (col === 0 ? -leftColOffset : leftColOffset);
+      const ny = leftStartY + row * leftYStep;
+      const delay = (0.6 + i * 0.08).toFixed(2);
+      
+      svg += `<path class="captree-path draw" d="M ${leftHubX} ${ny} L ${nx} ${ny}" style="animation-delay:${delay}s"></path>`;
+      
+      html += `<div class="captree-node node-green" style="left:${nx}px;top:${ny}px;animation-delay:${delay}s">
+                 <span class="cap-dot"></span>${item}
+               </div>`;
+    });
+    
+    // Right items (1 column)
+    const rightStartY = 135;
+    const rightYStep = 50;
+    const rightMaxY = rightStartY + (specialist.length-1) * rightYStep;
+    
+    svg += `<path class="captree-path draw trunk" d="M ${rightHubX} ${hubY+15} L ${rightHubX} ${rightMaxY}" style="animation-delay:0.9s"></path>`;
+    
+    specialist.forEach((item, i) => {
+      const ny = rightStartY + i * rightYStep;
+      const nx = rightHubX;
+      const delay = (1.0 + i * 0.1).toFixed(2);
+      
+      html += `<div class="captree-node node-amber" style="left:${nx}px;top:${ny}px;animation-delay:${delay}s">
+                 <span class="cap-dot"></span>${item}
+               </div>`;
+    });
+    
+    svg += `</svg>`;
+    el.innerHTML = svg + html;
   }
 
   // ---------- Personal capability map (HARSH) ----------
@@ -612,25 +737,23 @@
 
     const w = el.clientWidth || 880, h = el.clientHeight || 500;
     const cx = w/2, cy = h/2;
-    const radius = Math.min(w,h) * 0.38;
+    
+    // Elliptical distribution for nodes to better fit widescreen text boxes
+    const rx = w * 0.35;
+    const ry = h * 0.36;
 
     let svgHtml = `<svg class="pm-svg" viewBox="0 0 ${w} ${h}">`;
     let nodesHtml = '';
 
     items.forEach((it, i) => {
       const angle = (Math.PI * 2 * i / items.length) - Math.PI/2;
-      const nx = cx + radius * Math.cos(angle);
-      const ny = cy + radius * Math.sin(angle);
+      const nx = cx + rx * Math.cos(angle);
+      const ny = cy + ry * Math.sin(angle);
       const delay = (0.3 + i*0.15).toFixed(2);
 
       svgHtml += `<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" style="animation-delay:${delay}s"></line>`;
 
-      const nodeW = 190, nodeH = 86;
-      let left = nx - nodeW/2, top = ny - nodeH/2;
-      left = Math.max(4, Math.min(w - nodeW - 4, left));
-      top = Math.max(4, Math.min(h - nodeH - 4, top));
-
-      nodesHtml += `<div class="pm-node" style="left:${left}px;top:${top}px;animation-delay:${delay}s">
+      nodesHtml += `<div class="pm-node" style="left:${nx}px;top:${ny}px;animation-delay:${delay}s">
         <div class="pm-top">${icon(it.icon || 'circle')}<span class="pm-title">${it.t}</span></div>
         <span class="pm-desc">${it.d || ''}</span>
       </div>`;
